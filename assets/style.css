@@ -261,6 +261,10 @@ a:hover { color: var(--accent-2); }
 .c4 { color: var(--yellow); } .c5 { color: var(--cyan); } .c6 { color: var(--red); } .c7 { color: var(--accent-2); }
 .c8 { color: #9fb0c8; } .c9 { color: #c7a2c0; } .c10 { color: #a7c48f; } .cfree { color: var(--faint); }
 
+.pal-modes { display: flex; gap: 6px; padding-left: 18px; margin-top: 8px; }
+.pal-modes .mode { text-decoration: none; color: var(--dim); border: 1px solid var(--border-strong); border-radius: 4px; padding: 0 10px; }
+.pal-modes .mode:hover { color: var(--fg); }
+.pal-modes .mode.on { color: var(--bg); background: var(--accent); border-color: var(--accent); }
 .pal-list { display: grid; gap: 4px; padding-left: 18px; margin-top: 6px; }
 .pal { display: grid; grid-template-columns: 11em auto 1fr; gap: 12px; align-items: center; text-decoration: none; color: var(--fg); padding: 3px 6px; border-radius: 4px; border: 1px solid transparent; }
 .pal:hover { border-color: var(--border-strong); color: var(--fg); }

@@ -93,6 +93,27 @@
   document.documentElement.dataset.theme = store.get(THEME_KEY) || 'dark';
   applyPalette(store.get(PAL_KEY) || DEFAULT_PAL);
 
+  function setMode(mode) {
+    document.documentElement.dataset.theme = mode;
+    store.set(THEME_KEY, mode);
+    applyPalette(document.documentElement.dataset.palette);
+    syncPickers();
+  }
+  function setPalette(id) {
+    document.documentElement.dataset.theme = 'dark';
+    store.set(THEME_KEY, 'dark'); store.set(PAL_KEY, id);
+    const pal = applyPalette(id);
+    syncPickers();
+    return pal;
+  }
+  // keep the highlight on whatever is active, in every picker on screen
+  function syncPickers() {
+    const pal = document.documentElement.dataset.palette;
+    const mode = document.documentElement.dataset.theme;
+    document.querySelectorAll('[data-pal]').forEach(n => n.classList.toggle('on', mode !== 'light' && n.dataset.pal === pal));
+    document.querySelectorAll('[data-mode]').forEach(n => n.classList.toggle('on', n.dataset.mode === mode));
+  }
+
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -487,30 +508,27 @@
       case '/theme': case 'theme': {
         const a = arg.toLowerCase();
         if (a === 'light' || a === 'dark') {
-          document.documentElement.dataset.theme = a;
-          store.set(THEME_KEY, a); applyPalette(document.documentElement.dataset.palette); buddy('theme');
+          setMode(a); buddy('theme');
           say(`Switched to <strong>${a}</strong> mode.${a === 'light' ? ' Pick a palette any time to go back to dark.' : ''}`);
           break;
         }
         const chosen = PALETTES.find(x => x.id === a || x.name.toLowerCase() === a);
         if (chosen) {
-          document.documentElement.dataset.theme = 'dark';
-          store.set(THEME_KEY, 'dark'); store.set(PAL_KEY, chosen.id);
-          applyPalette(chosen.id); buddy('theme');
+          setPalette(chosen.id); buddy('theme');
           say(`Palette set to <strong>${esc(chosen.name)}</strong>. Saved for your next visit.`);
           break;
         }
         if (a) { say(`No theme called “${esc(arg)}”.`, 'err', 'Error'); }
         await think(el);
-        const curPal = document.documentElement.dataset.palette;
-        const isLight = document.documentElement.dataset.theme === 'light';
         const rows = PALETTES.map(x =>
-          `<a href="#" class="pal${!isLight && x.id === curPal ? ' on' : ''}" data-cmd="/theme ${x.id}">` +
+          `<a href="#" class="pal" data-pal="${x.id}" role="button">` +
           `<span>${esc(x.name)}</span><span class="sw" aria-hidden="true">${x.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>` +
           `<span class="pd">${esc(x.desc)}</span></a>`).join('');
         el.insertAdjacentHTML('beforeend', `<div class="tool">${toolHead('Theme', null, 'info')}` +
-          sub('Click a palette to try it live · ' + cmdLink('/theme light', 'light mode') + ' · ' + cmdLink('/theme dark', 'dark mode')) +
+          sub('Click to try it live — it switches right here') +
+          `<div class="pal-modes"><a href="#" class="mode" data-mode="dark" role="button">dark</a><a href="#" class="mode" data-mode="light" role="button">light</a></div>` +
           `<div class="pal-list">${rows}</div></div>`);
+        syncPickers();
         buddy('theme');
         break;
       }
@@ -602,6 +620,13 @@
 
   // clickable commands anywhere
   document.addEventListener('click', (e) => {
+    const pick = e.target.closest('[data-pal], [data-mode]');
+    if (pick) {
+      e.preventDefault();
+      if (pick.dataset.pal) setPalette(pick.dataset.pal); else setMode(pick.dataset.mode);
+      buddy('theme');
+      return;
+    }
     const a = e.target.closest('[data-cmd]');
     if (a) {
       e.preventDefault();
