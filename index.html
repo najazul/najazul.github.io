@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Norman Jazul Jr.</title>
+  <meta name="description" content="Norman Jazul Jr. — fullstack developer specializing in backend, with a passion for cloud and security. A portfolio you explore like a terminal." />
+  <meta name="theme-color" content="#141413" />
+  <meta property="og:title" content="Norman Jazul Jr. — ~/portfolio" />
+  <meta property="og:description" content="Fullstack developer · backend specialist · cloud & security enthusiast." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23141413'/><text x='50' y='68' font-size='56' text-anchor='middle' fill='%23d97757' font-family='monospace'>&gt;_</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="app">
+    <main id="term" class="term" aria-label="Portfolio terminal">
+      <section class="welcome" aria-label="Welcome">
+        <div class="welcome-legend">norman.dev <span class="dim">v2026.11</span></div>
+        <div class="welcome-grid">
+          <div class="welcome-left">
+            <p class="welcome-hi">Welcome, visitor!</p>
+<div class="mascot"></div>
+            <p class="welcome-name"><strong>Norman Jazul Jr.</strong></p>
+            <p class="dim">Fullstack Dev · Backend<br />Cloud &amp; Security enthusiast</p>
+            <p class="dim small">~/portfolio</p>
+          </div>
+          <div class="welcome-right">
+            <p class="accent">Tips for getting started</p>
+            <p>Type <a href="#" data-cmd="/help">/help</a> to see all commands</p>
+            <p>Start with <a href="#" data-cmd="/about">/about</a>, then <a href="#" data-cmd="/blog">/blog</a></p>
+            <p>Too much scrolling? type <span class="accent">/clear</span> to wipe the screen</p>
+            <p>Your <a href="#" data-cmd="/context">context window</a> fills up as you read.<br /><span class="dim">Hit 100% and you've seen everything.</span></p>
+            <hr />
+            <p class="accent">Recent activity</p>
+            <p id="recent" class="dim">Checking GitHub…</p>
+          </div>
+        </div>
+      </section>
+      <div id="log" class="log" aria-live="polite"></div>
+    </main>
+
+    <footer class="dock">
+      <div id="menu" class="menu" role="listbox" aria-label="Commands" hidden></div>
+      <form id="prompt" class="prompt" autocomplete="off">
+        <span class="caret" aria-hidden="true">&gt;</span>
+        <label for="cmd" class="sr-only">Command</label>
+        <input id="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder='Try "/about"' />
+      </form>
+      <div class="status">
+        <span class="status-left"><span id="buddy-mini" class="buddy-mini"></span><span id="status-left" class="hint"><span class="dim">? for shortcuts</span></span></span>
+        <button type="button" class="status-right" id="ctx" data-cmd="/context" title="Show context usage">
+          <span class="ctx-bar" aria-hidden="true"><span id="ctx-fill"></span></span>
+          <span id="ctx-text">context 0%</span>
+        </button>
+      </div>
+      <nav class="chips" aria-label="Quick commands">
+        <button type="button" data-cmd="/about">/about</button>
+        <button type="button" data-cmd="/projects">/projects</button>
+        <button type="button" data-cmd="/blog">/blog</button>
+        <button type="button" data-cmd="/experience">/experience</button>
+        <button type="button" data-cmd="/skills">/skills</button>
+        <button type="button" data-cmd="/contact">/contact</button>
+        <button type="button" data-cmd="/help">/help</button>
+      </nav>
+    </footer>
+  </div>
+  <noscript><p style="padding:16px">This portfolio is a small terminal app and needs JavaScript. You can also read the files in <code>content/</code> directly.</p></noscript>
+  <script src="assets/app.js"></script>
+  <script src="assets/buddy.js"></script>
+</body>
+</html>
