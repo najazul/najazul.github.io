@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Norman Jazul Jr.</title>
   <meta name="description" content="Norman Jazul Jr. — fullstack developer specializing in backend, with a passion for cloud and security. A portfolio you explore like a terminal." />
-  <meta name="theme-color" content="#0d1117" />
+  <meta name="theme-color" content="#1b1f27" />
   <script>
     // set theme + palette before first paint so there is no color flash
     try {
       document.documentElement.dataset.theme = localStorage.getItem('nj-portfolio-theme') || 'dark';
-      document.documentElement.dataset.palette = localStorage.getItem('nj-portfolio-palette') || 'midnight';
-    } catch (e) { document.documentElement.dataset.theme = 'dark'; document.documentElement.dataset.palette = 'midnight'; }
+      document.documentElement.dataset.palette = localStorage.getItem('nj-portfolio-palette') || 'nord';
+    } catch (e) { document.documentElement.dataset.theme = 'dark'; document.documentElement.dataset.palette = 'nord'; }
   </script>
   <meta property="og:title" content="Norman Jazul Jr. — ~/portfolio" />
   <meta property="og:description" content="Fullstack developer · backend specialist · cloud & security enthusiast." />
@@ -39,6 +39,7 @@
             <p>Type <a href="#" data-cmd="/help">/help</a> to see all commands</p>
             <p>Start with <a href="#" data-cmd="/about">/about</a>, then <a href="#" data-cmd="/blog">/blog</a></p>
             <p>Too much scrolling? type <span class="accent">/clear</span> to wipe the screen</p>
+            <p>Change the colors with <a href="#" data-cmd="/theme">/theme</a> <span class="dim">(dark &amp; light)</span></p>
             <p>Your <a href="#" data-cmd="/context">context window</a> fills up as you read.<br /><span class="dim">Hit 100% and you've seen everything.</span></p>
             <hr />
             <p class="accent">Recent activity</p>

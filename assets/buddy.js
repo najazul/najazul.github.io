@@ -63,7 +63,7 @@
 
   // ---------- what it says: up to 4 [pose, caption] per page, picked at random ----------
   const PAGES = {
-    home: [['wave', 'Hi! I\'m Norman\'s buddy. Try /about.'], ['point', 'Type a command below, or click one.'], ['idle', 'Welcome! Start with /about.'], ['think', 'Not sure where to start? /help']],
+    home: [['wave', 'Hi! I\'m Norman\'s buddy. Try /about.'], ['point', 'Type a command below, or click one.'], ['idle', 'Welcome! Start with /about.'], ['think', 'Psst — /theme changes my color!']],
     about: [['wave', 'That\'s Norman — nice to meet you!'], ['point', 'Backend is his home turf.'], ['cheer', 'Two championships. Not bad, right?'], ['shield', 'Cloud and security? Big fan.']],
     experience: [['typing', 'Deloitte and SN Intl — real deadlines.'], ['think', 'From Excel pivots to n8n bots.'], ['point', 'The awards are at the bottom.'], ['reading', 'Lots of learning in those internships.']],
     projects: [['point', 'Pick one — /blog explains how.'], ['typing', 'All pulled from GitHub.'], ['cheer', 'drAIn and Skolaroid won awards!'], ['think', 'Which first? Try /blog drain.']],
@@ -193,7 +193,7 @@
 
   document.addEventListener('click', (e) => {
     if (e.target.closest('.buddy')) { lastReact = Date.now(); react('poke'); return; }
-    if (e.target.closest('[data-cmd]')) return;               // page reaction comes from app.js
+    if (e.target.closest('[data-cmd], [data-pal], [data-mode]')) return;               // page reaction comes from app.js
     if (e.target.closest('a[href^="http"]')) { lastReact = Date.now(); react('link'); return; }
     if (e.target.closest('input, button, .menu')) return;
     const sel = window.getSelection();

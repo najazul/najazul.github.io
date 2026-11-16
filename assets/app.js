@@ -61,13 +61,14 @@
   // ---------- color palettes + robot favicon ----------
   const PAL_KEY = 'nj-portfolio-palette';
   const PALETTES = [
-    { id: 'midnight', name: 'Midnight Steel', desc: 'near-black, soft sky blue — calm', sw: ['#0d1117', '#151b24', '#d6deeb', '#6cb6ff', '#56d4dd', '#7ee0a1'] },
-    { id: 'ocean',    name: 'Deep Ocean',     desc: 'black-navy, medium blue, teal',     sw: ['#0a0e14', '#111823', '#cfd8e3', '#4c9aff', '#3fc1c9', '#6bd49b'] },
-    { id: 'nord',     name: 'Nord Night',     desc: 'charcoal blue, pastel frost — softest', sw: ['#1b1f27', '#232833', '#e5e9f0', '#88c0d0', '#81a1c1', '#a3be8c'] },
-    { id: 'indigo',   name: 'Electric Indigo', desc: 'pure black, indigo blue — bold',   sw: ['#08090c', '#101219', '#dcdfe8', '#7aa2f7', '#7dcfff', '#9ece6a'] },
-    { id: 'classic',  name: 'Classic Orange', desc: 'the original warm terminal look',   sw: ['#141413', '#1c1c1a', '#e8e6dc', '#d97757', '#6fc2c0', '#7fb77e'] },
+    // sw = dark swatches, lsw = light swatches: [bg, panel, text, accent, cyan, green]
+    { id: 'nord',     name: 'Nord Night',      desc: 'charcoal blue, pastel frost — softest', sw: ['#1b1f27', '#232833', '#e5e9f0', '#88c0d0', '#81a1c1', '#a3be8c'], lsw: ['#eceff4', '#ffffff', '#2e3440', '#3b6e8f', '#2f6f80', '#4f7a3a'] },
+    { id: 'midnight', name: 'Midnight Steel',  desc: 'near-black, soft sky blue — calm',      sw: ['#0d1117', '#151b24', '#d6deeb', '#6cb6ff', '#56d4dd', '#7ee0a1'], lsw: ['#f4f6fa', '#ffffff', '#0f172a', '#1f6fd1', '#0f7380', '#1f7a4a'] },
+    { id: 'ocean',    name: 'Deep Ocean',      desc: 'black-navy, medium blue, teal',         sw: ['#0a0e14', '#111823', '#cfd8e3', '#4c9aff', '#3fc1c9', '#6bd49b'], lsw: ['#eef3f9', '#ffffff', '#0b1a2b', '#1d5fd6', '#0b6f78', '#17784f'] },
+    { id: 'indigo',   name: 'Electric Indigo', desc: 'pure black, indigo blue — bold',        sw: ['#08090c', '#101219', '#dcdfe8', '#7aa2f7', '#7dcfff', '#9ece6a'], lsw: ['#f5f5fa', '#ffffff', '#11121a', '#3d5bd9', '#0e6f9a', '#3d7a1f'] },
+    { id: 'classic',  name: 'Classic Orange',  desc: 'the original warm terminal look',       sw: ['#141413', '#1c1c1a', '#e8e6dc', '#d97757', '#6fc2c0', '#7fb77e'], lsw: ['#f3f2ed', '#ffffff', '#141413', '#b4441f', '#136768', '#2e6a2d'] },
   ];
-  const DEFAULT_PAL = 'midnight';
+  const DEFAULT_PAL = 'nord';
   function robotIcon(color, bg) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>` +
       `<rect x='8' y='2' width='16' height='11' rx='2' fill='${color}'/>` +
@@ -83,11 +84,11 @@
     const pal = PALETTES.find(x => x.id === id) || PALETTES[0];
     document.documentElement.dataset.palette = pal.id;
     const light = document.documentElement.dataset.theme === 'light';
-    const accent = light ? (pal.id === 'classic' ? '#b4441f' : '#1f5fbf') : pal.sw[3];
+    const sw = light ? pal.lsw : pal.sw;
     const icon = document.querySelector('link[rel="icon"]');
-    if (icon) icon.href = robotIcon(accent, light ? '#ffffff' : pal.sw[0]);
+    if (icon) icon.href = robotIcon(sw[3], light ? '#ffffff' : sw[0]);
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = light ? '#f3f2ed' : pal.sw[0];
+    if (meta) meta.content = sw[0];
     return pal;
   }
   document.documentElement.dataset.theme = store.get(THEME_KEY) || 'dark';
@@ -99,9 +100,8 @@
     applyPalette(document.documentElement.dataset.palette);
     syncPickers();
   }
-  function setPalette(id) {
-    document.documentElement.dataset.theme = 'dark';
-    store.set(THEME_KEY, 'dark'); store.set(PAL_KEY, id);
+  function setPalette(id) {   // keeps the current light/dark mode
+    store.set(PAL_KEY, id);
     const pal = applyPalette(id);
     syncPickers();
     return pal;
@@ -110,7 +110,7 @@
   function syncPickers() {
     const pal = document.documentElement.dataset.palette;
     const mode = document.documentElement.dataset.theme;
-    document.querySelectorAll('[data-pal]').forEach(n => n.classList.toggle('on', mode !== 'light' && n.dataset.pal === pal));
+    document.querySelectorAll('[data-pal]').forEach(n => n.classList.toggle('on', n.dataset.pal === pal));
     document.querySelectorAll('[data-mode]').forEach(n => n.classList.toggle('on', n.dataset.mode === mode));
   }
 
@@ -509,7 +509,7 @@
         const a = arg.toLowerCase();
         if (a === 'light' || a === 'dark') {
           setMode(a); buddy('theme');
-          say(`Switched to <strong>${a}</strong> mode.${a === 'light' ? ' Pick a palette any time to go back to dark.' : ''}`);
+          say(`Switched to <strong>${a}</strong> mode.`);
           break;
         }
         const chosen = PALETTES.find(x => x.id === a || x.name.toLowerCase() === a);
@@ -522,10 +522,12 @@
         await think(el);
         const rows = PALETTES.map(x =>
           `<a href="#" class="pal" data-pal="${x.id}" role="button">` +
-          `<span>${esc(x.name)}</span><span class="sw" aria-hidden="true">${x.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>` +
+          `<span>${esc(x.name)}</span>` +
+          `<span class="sw d" aria-hidden="true">${x.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>` +
+          `<span class="sw l" aria-hidden="true">${x.lsw.map(c => `<i style="background:${c}"></i>`).join('')}</span>` +
           `<span class="pd">${esc(x.desc)}</span></a>`).join('');
         el.insertAdjacentHTML('beforeend', `<div class="tool">${toolHead('Theme', null, 'info')}` +
-          sub('Click to try it live — it switches right here') +
+          sub('Click to try it live — every palette has a dark and a light version') +
           `<div class="pal-modes"><a href="#" class="mode" data-mode="dark" role="button">dark</a><a href="#" class="mode" data-mode="light" role="button">light</a></div>` +
           `<div class="pal-list">${rows}</div></div>`);
         syncPickers();
