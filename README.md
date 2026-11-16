@@ -31,9 +31,22 @@ All text lives in `content/`. Change the `.md` files; the page updates by itself
 - To add a new page or post: add the `.md` file, then add one line to the `DOCS` list at the top of `assets/app.js`.
 - `/github` pulls your public repos live from the GitHub API (falls back to a small saved list if the API is down or rate limited).
 
-## Deploy
+## Deploy (CI/CD)
 
-Any static host works. For example on Cloudflare Pages, Vercel, Netlify, or GitHub Pages: point it at this folder, no build command, output folder `/`.
+Just push to `main` of the private repo `najazul/portfolio`:
+
+```bash
+git push
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) then:
+
+1. **Checks** — JavaScript syntax, every page/command link exists, and no private info (phone, address, email).
+2. **Deploys** — only if the checks pass, it copies the site files to the public `najazul.github.io` repo using the `PAGES_DEPLOY_KEY` secret. GitHub Pages publishes it about 20 seconds later.
+
+Pull requests run the checks only, never the deploy.
+
+Moving to your own domain later: add a `CNAME` file with the domain to the site files, or switch hosts — any static host works (no build step).
 
 ## The buddy
 
