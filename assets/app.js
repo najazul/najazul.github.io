@@ -29,7 +29,13 @@
     { cmd: '/context', desc: 'See how much of the portfolio you\'ve read' },
     { cmd: '/compact', desc: 'Reset the context window to 0%' },
     { cmd: '/clear',   desc: 'Clear the screen so you don\'t scroll (keeps context)' },
-    { cmd: '/theme',   desc: 'Switch light / dark' },
+    { cmd: '/theme',   desc: 'Pick a color palette (or light / dark)' },
+    { cmd: '/theme midnight', desc: 'Midnight Steel — near-black, sky blue' },
+    { cmd: '/theme ocean',    desc: 'Deep Ocean — black-navy, medium blue' },
+    { cmd: '/theme nord',     desc: 'Nord Night — soft charcoal blue' },
+    { cmd: '/theme indigo',   desc: 'Electric Indigo — black, indigo' },
+    { cmd: '/theme classic',  desc: 'Classic Orange — the original' },
+    { cmd: '/theme light',    desc: 'Light mode' },
   ];
   const MENU = [...DOCS.map(d => ({ cmd: d.cmd, desc: d.desc })), ...SESSION_CMDS];
 
@@ -52,8 +58,40 @@
   try { readSet = new Set(JSON.parse(store.get(STORE_KEY) || '[]').filter(id => byId[id])); } catch { /* ignore */ }
   const saveRead = () => store.set(STORE_KEY, JSON.stringify([...readSet]));
 
-  const savedTheme = store.get(THEME_KEY);
-  if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+  // ---------- color palettes + robot favicon ----------
+  const PAL_KEY = 'nj-portfolio-palette';
+  const PALETTES = [
+    { id: 'midnight', name: 'Midnight Steel', desc: 'near-black, soft sky blue — calm', sw: ['#0d1117', '#151b24', '#d6deeb', '#6cb6ff', '#56d4dd', '#7ee0a1'] },
+    { id: 'ocean',    name: 'Deep Ocean',     desc: 'black-navy, medium blue, teal',     sw: ['#0a0e14', '#111823', '#cfd8e3', '#4c9aff', '#3fc1c9', '#6bd49b'] },
+    { id: 'nord',     name: 'Nord Night',     desc: 'charcoal blue, pastel frost — softest', sw: ['#1b1f27', '#232833', '#e5e9f0', '#88c0d0', '#81a1c1', '#a3be8c'] },
+    { id: 'indigo',   name: 'Electric Indigo', desc: 'pure black, indigo blue — bold',   sw: ['#08090c', '#101219', '#dcdfe8', '#7aa2f7', '#7dcfff', '#9ece6a'] },
+    { id: 'classic',  name: 'Classic Orange', desc: 'the original warm terminal look',   sw: ['#141413', '#1c1c1a', '#e8e6dc', '#d97757', '#6fc2c0', '#7fb77e'] },
+  ];
+  const DEFAULT_PAL = 'midnight';
+  function robotIcon(color, bg) {
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>` +
+      `<rect x='8' y='2' width='16' height='11' rx='2' fill='${color}'/>` +
+      `<circle cx='12.5' cy='7.5' r='2' fill='${bg}'/><circle cx='19.5' cy='7.5' r='2' fill='${bg}'/>` +
+      `<rect x='13' y='10.2' width='6' height='1.3' rx='.6' fill='${bg}'/>` +
+      `<rect x='14' y='13' width='4' height='2' fill='${color}'/>` +
+      `<rect x='9' y='15' width='14' height='9' rx='1.5' fill='${color}'/>` +
+      `<rect x='4.5' y='15.5' width='3' height='8' rx='1.5' fill='${color}'/><rect x='24.5' y='15.5' width='3' height='8' rx='1.5' fill='${color}'/>` +
+      `<rect x='11' y='24' width='3.5' height='6' rx='1' fill='${color}'/><rect x='17.5' y='24' width='3.5' height='6' rx='1' fill='${color}'/></svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+  function applyPalette(id) {
+    const pal = PALETTES.find(x => x.id === id) || PALETTES[0];
+    document.documentElement.dataset.palette = pal.id;
+    const light = document.documentElement.dataset.theme === 'light';
+    const accent = light ? (pal.id === 'classic' ? '#b4441f' : '#1f5fbf') : pal.sw[3];
+    const icon = document.querySelector('link[rel="icon"]');
+    if (icon) icon.href = robotIcon(accent, light ? '#ffffff' : pal.sw[0]);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = light ? '#f3f2ed' : pal.sw[0];
+    return pal;
+  }
+  document.documentElement.dataset.theme = store.get(THEME_KEY) || 'dark';
+  applyPalette(store.get(PAL_KEY) || DEFAULT_PAL);
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -345,7 +383,7 @@
     return toolHead('Help', null, 'info') + sub('Commands — type them, or just click') +
       `<div class="section-label">Pages</div><div class="cmds">${pages.map(d => row(d.cmd, d.desc)).join('')}</div>` +
       `<div class="section-label">Blog posts</div><div class="cmds">${posts.map(d => row(d.cmd, d.desc)).join('')}</div>` +
-      `<div class="section-label">Session</div><div class="cmds">${SESSION_CMDS.map(c => row(c.cmd, c.desc)).join('')}</div>` +
+      `<div class="section-label">Session</div><div class="cmds">${SESSION_CMDS.filter(c => !c.cmd.startsWith('/theme ')).map(c => row(c.cmd, c.desc)).join('')}</div>` +
       `<div class="section-label">Shell (yes, these work too)</div><div class="cmds">` +
       row('ls', 'List files') + row('cat about.md', 'Read a file') + row('whoami', 'Short intro') + row('pwd', 'Where am I') + `</div>` +
       `<div class="section-label">Shortcuts: <span class="faint">/</span> command menu · <span class="faint">tab</span> complete · <span class="faint">↑ ↓</span> history · <span class="faint">ctrl+l</span> clear · <span class="faint">esc</span> close menu</div>`;
@@ -446,13 +484,34 @@
         try { history.replaceState(null, '', location.pathname + location.search); } catch { /* ignore */ }
         break;
       }
-      case '/theme': {
-        const cur = document.documentElement.dataset.theme ||
-          (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-        const next = cur === 'light' ? 'dark' : 'light';
-        document.documentElement.dataset.theme = next;
-        store.set(THEME_KEY, next); buddy('theme');
-        say(`Theme set to <strong>${next}</strong>.`);
+      case '/theme': case 'theme': {
+        const a = arg.toLowerCase();
+        if (a === 'light' || a === 'dark') {
+          document.documentElement.dataset.theme = a;
+          store.set(THEME_KEY, a); applyPalette(document.documentElement.dataset.palette); buddy('theme');
+          say(`Switched to <strong>${a}</strong> mode.${a === 'light' ? ' Pick a palette any time to go back to dark.' : ''}`);
+          break;
+        }
+        const chosen = PALETTES.find(x => x.id === a || x.name.toLowerCase() === a);
+        if (chosen) {
+          document.documentElement.dataset.theme = 'dark';
+          store.set(THEME_KEY, 'dark'); store.set(PAL_KEY, chosen.id);
+          applyPalette(chosen.id); buddy('theme');
+          say(`Palette set to <strong>${esc(chosen.name)}</strong>. Saved for your next visit.`);
+          break;
+        }
+        if (a) { say(`No theme called “${esc(arg)}”.`, 'err', 'Error'); }
+        await think(el);
+        const curPal = document.documentElement.dataset.palette;
+        const isLight = document.documentElement.dataset.theme === 'light';
+        const rows = PALETTES.map(x =>
+          `<a href="#" class="pal${!isLight && x.id === curPal ? ' on' : ''}" data-cmd="/theme ${x.id}">` +
+          `<span>${esc(x.name)}</span><span class="sw" aria-hidden="true">${x.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>` +
+          `<span class="pd">${esc(x.desc)}</span></a>`).join('');
+        el.insertAdjacentHTML('beforeend', `<div class="tool">${toolHead('Theme', null, 'info')}` +
+          sub('Click a palette to try it live · ' + cmdLink('/theme light', 'light mode') + ' · ' + cmdLink('/theme dark', 'dark mode')) +
+          `<div class="pal-list">${rows}</div></div>`);
+        buddy('theme');
         break;
       }
       default: {

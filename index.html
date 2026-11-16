@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Norman Jazul Jr.</title>
   <meta name="description" content="Norman Jazul Jr. — fullstack developer specializing in backend, with a passion for cloud and security. A portfolio you explore like a terminal." />
-  <meta name="theme-color" content="#141413" />
+  <meta name="theme-color" content="#0d1117" />
+  <script>
+    // set theme + palette before first paint so there is no color flash
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('nj-portfolio-theme') || 'dark';
+      document.documentElement.dataset.palette = localStorage.getItem('nj-portfolio-palette') || 'midnight';
+    } catch (e) { document.documentElement.dataset.theme = 'dark'; document.documentElement.dataset.palette = 'midnight'; }
+  </script>
   <meta property="og:title" content="Norman Jazul Jr. — ~/portfolio" />
   <meta property="og:description" content="Fullstack developer · backend specialist · cloud & security enthusiast." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23141413'/><text x='50' y='68' font-size='56' text-anchor='middle' fill='%23d97757' font-family='monospace'>&gt;_</text></svg>" />
+  <link rel="icon" href="data:," />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
